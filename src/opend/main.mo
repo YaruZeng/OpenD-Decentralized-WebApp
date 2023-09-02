@@ -7,8 +7,14 @@ import List "mo:base/List";
 
 actor OpenD {
 
+    private type Listing = { // create a custom type to store info of listed NFT
+        itemOwner: Principal;
+        itemPrice: Nat;
+    };
+
     var mapOfNFTs = HashMap.HashMap<Principal, NFTActorClass.NFT>(1, Principal.equal, Principal.hash); // to store <NFTPrincipalId: NFT>
     var mapOfOwners = HashMap.HashMap<Principal, List.List<Principal>>(1, Principal.equal, Principal.hash); // to store <OwnerPrincipalId: List of NFTPrincipalIds>
+    var mapOfListings = HashMap.HashMap<Principal, Listing>(1, Principal.equal, Principal.hash); // to store data of listed NFT
 
     public shared(msg) func mint(imgData: [Nat8], name: Text) : async Principal { // mint nft from an ecommerce page
         let owner : Principal = msg.caller;
@@ -36,13 +42,31 @@ actor OpenD {
         mapOfOwners.put(owner, ownedNFTs); // save into the ownerMap
     };
 
-    public query func getOwnedNFTs(user: Principal) : async [Principal] {
-        var userNFTs : List.List<Principal> = switch (mapOfOwners.get(user)) { // get the list of NFTs the owner owned
-            case null List.nil<Principal>(); // in case the owener ID doesn't exist in the map
+    public query func getOwnedNFTs(user: Principal) : async [Principal] { // query for NFTs owned by a user
+        var userNFTs : List.List<Principal> = switch (mapOfOwners.get(user)) { 
+            case null List.nil<Principal>(); // in case the user ID doesn't exist in the map
             case (?result) result;
         };
 
         return List.toArray(userNFTs);
     };
 
+    public shared(msg) func listItem(id: Principal, price: Nat) : async Text{
+        var item : NFTActorClass.NFT = switch (mapOfNFTs.get(id)) { // get the required NFT id
+            case null return "NFT does not exist."; // in case the owener ID doesn't exist in the map
+            case (?result) result;
+        };
+
+        let owner = await item.getOwner(); // get the owner of the NFT
+        if (Principal.equal(owner, msg.caller)) { // check the caller is the owner of the NFT
+            let newListing : Listing = { // create a new Listing instance
+                itemOwner = owner;
+                itemPrice = price;
+            };
+            mapOfListings.put(id, newListing); // store into the Listing Map
+            return "Success";
+        } else {
+            return "You don't own the NFT.";
+        }
+    }
 };

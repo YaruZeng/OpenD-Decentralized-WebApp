@@ -2,10 +2,10 @@
 
 This is the final project of Udemy - The complete web-development bootcamp with backend supported by ICP and Motoko, frontend by CSS, HTML, React. This webApp have four pages: 
 
--Homepage: provide an overview of the NFTs.
--Discover: users can check NFTs on sale and buy NFTs with tokens from project DFaucet.
--Minter: users can mint NFTs by inputing NFT image and name.
--My NFTs: users can check and sell their own NFTs. 
+* Homepage: provide an overview of the NFTs.
+* Discover: users can check NFTs on sale and buy NFTs with tokens from project DFaucet.
+* Minter: users can mint NFTs by inputing NFT image and name.
+* My NFTs: users can check and sell their own NFTs. 
 
 <img width="1428" alt="image" src="https://github.com/IvyZayn/OpenD-Decentralized-WebApp/assets/91594306/ffffeb76-3086-491f-a2e9-849c0cc32f95">
 

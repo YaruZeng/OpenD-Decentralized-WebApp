@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import logo from "../../assets/logo.png";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory } from "../../../declarations/nft";
+import { idlFactory as tokenIdlFactory} from "../../../declarations/token";
 import { Principal } from "@dfinity/principal";
 import Button from "./Button";
 import { opend } from "../../../declarations/opend";
@@ -77,7 +77,6 @@ function Item(props) {
   let price;
   function handleSell() {
     // show input when sell button is clicked and change button text
-    console.log("Sell clicked");
     setPriceInput(
       <input
         placeholder="Price in Samaritan"
@@ -113,6 +112,17 @@ function Item(props) {
 
   async function handleBuy() {
     console.log("Buy is triggered");
+    const tokenActor = await Actor.createActor(tokenIdlFactory, { // create a token actor with its own id
+      agent,
+      canisterId: Principal.fromText("rrkah-fqaaa-aaaaa-aaaaq-cai"),
+    });
+
+    const sellerId = await opend.getOriginalOwner(props.id);
+    const itemPrice = await opend.getListedNFTPrice(props.id);
+
+    const result = await tokenActor.transfer(sellerId, itemPrice);
+    
+
   }
 
   return (

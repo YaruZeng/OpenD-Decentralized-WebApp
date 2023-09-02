@@ -10,7 +10,7 @@ function Item(props) {
   const [ownerId, setOwnerId] = useState("");
   const [image, setImage] = useState();
 
-  const id = Principal.fromText(props.id);
+  const id = props.id;
 
   const localHost = "http://localhost:8080/"; // to make HTTP request to fetch the nft canister
   const agent = new HttpAgent({host: localHost}); // create a HTTP argent

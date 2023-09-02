@@ -5,6 +5,8 @@ import { idlFactory } from "../../../declarations/nft";
 import { Principal } from "@dfinity/principal";
 import Button from "./Button";
 import { opend } from "../../../declarations/opend";
+import CURRENT_USER_ID from "../index";
+import PriceLabel from "./PriceLabel";
 
 function Item(props) {
   const [name, setName] = useState("");
@@ -15,6 +17,7 @@ function Item(props) {
   const [loaderHidden, setLoaderHidden] = useState(true); 
   const [blur, setBlur] = useState(); // control the style of image
   const [listingStatus, setListingStatus] = useState(); // control the notice of listing
+  const [priceLabel, setPriceLabel] = useState();
 
   const id = props.id;
 
@@ -45,15 +48,26 @@ function Item(props) {
     setOwnerId(owner.toText());
     setImage(imageURL);
 
-    // handle input, ownerId, and sell button
+    // handle input, ownerId, and sell button on MyNFTs and Discover page
+    if (props.role === "collection") { // on MyNFTs page 
     const nftIsListed = await opend.isListed(props.id);
     if (nftIsListed) {
       setPriceInput(); // hide the input
       setOwnerId("OpenD");
       setListingStatus("Listed");
+      setBlur({filter: "blur(4px)"});
     } else {
       setButton(<Button handleClick={handleSell} text={"Sell"} />);
-    };
+    }
+  } else if (props.role === "discover"){ // on Discover page 
+      const originalOwner = await opend.getOriginalOwner(props.id);
+      if (originalOwner.toText() != CURRENT_USER_ID.toText()) { // original owner cannot buy the NFT
+        setButton(<Button handleClick={handleBuy} text={"Buy"} />);
+      }
+
+      const price = await opend.getListedNFTPrice(props.id);
+      setPriceLabel(<PriceLabel sellPrice={price.toString()}/>);
+    }
   }
 
   useEffect(() => {
@@ -97,6 +111,10 @@ function Item(props) {
     }
   }
 
+  async function handleBuy() {
+    console.log("Buy is triggered");
+  }
+
   return (
     <div className="disGrid-item">
       <div className="disPaper-root disCard-root makeStyles-root-17 disPaper-elevation1 disPaper-rounded">
@@ -112,6 +130,7 @@ function Item(props) {
           <div></div>
         </div>
         <div className="disCardContent-root">
+          {priceLabel}
           <h2 className="disTypography-root makeStyles-bodyText-24 disTypography-h5 disTypography-gutterBottom">
             {name}
             <span className="purple-text"> {listingStatus}</span>

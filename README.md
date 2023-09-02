@@ -1,3 +1,14 @@
+# OpenD
+
+This is the final project of Udemy - The complete web-development bootcamp with backend supported by ICP and Motoko, frontend by CSS, HTML, React. This webApp have four pages: 
+
+-Homepage: provide an overview of the NFTs.
+-Discover: users can check NFTs on sale and buy NFTs with tokens from project DFaucet.
+-Minter: users can mint NFTs by inputing NFT image and name.
+-My NFTs: users can check and sell their own NFTs. 
+
+<img width="1428" alt="image" src="https://github.com/IvyZayn/OpenD-Decentralized-WebApp/assets/91594306/ffffeb76-3086-491f-a2e9-849c0cc32f95">
+
 Copyright 2022 London App Brewery LTD (www.appbrewery.com)
 
 The code in this tutorial project is licended under the Apache License, Version 2.0 (the "License");
@@ -14,6 +25,7 @@ limitations under the License.
 
 Here is the TL;DR version of the above licence:
 https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)
+
 
 # To Install and Run the Project
 
@@ -39,62 +51,6 @@ dfx deploy --argument='("CryptoDunks #123", principal "rv6gp-xz7if-oikw6-jcql4-i
 
 http://localhost:8080/
 
-# Minter Else HTML
-
-```
- <div className="minter-container">
-        <h3 className="Typography-root makeStyles-title-99 Typography-h3 form-Typography-gutterBottom">
-          Minted!
-        </h3>
-        <div className="horizontal-center">
-        </div>
-      </div>
-
-```
-
-# Loader HTML
-
-```
-<div className="lds-ellipsis">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-```
-
-# Button HTML
-
-```
-<div className="Chip-root makeStyles-chipBlue-108 Chip-clickable">
-            <span
-              onClick={}
-              className="form-Chip-label"
-            >
-              Sell
-            </span>
-            </div>
-```
-
-# Price Input HTML
-
-```
-<input
-        placeholder="Price in DANG"
-        type="number"
-        className="price-input"
-        value={}
-        onChange={}
-      />
-```
-
-# Price Label HTML
-
-```
-<div className="disButtonBase-root disChip-root makeStyles-price-23 disChip-outlined">
-          <span className="disChip-label">23 DANG</span>
-        </div>
-```
 
 # Creating NFT for Testing
 
@@ -122,12 +78,8 @@ dfx canister id opend
 dfx canister call <REPLACE WITH NFT CANISTER ID> transferOwnership '(principal "<REPLACE WITH OPEND CANISTER ID>", true)'
 ```
 
-# Conneting to the Token Canister
+# TODO
 
-1. Copy over the token declarations folder
+1. Test the features after commit#198d11832391261a94be75cb596f080e4de5a493 "Added logic of transfering tokens from buyer to seller on buying" . An error occured on deploying: Error - The Replica returned an error: code 3, message: "Canister rrkah-fqaaa-aaaaa-aaaaq-cai has no update method 'mint'". A solution may be to deploy the two projects on ICP so that two canisters can be run simultaneously.
 
-2. Set the token canister id into the <REPLACE WITH TOKEN CANISTER ID>
-
-```
-const dangPrincipal = Principal.fromText("<REPLACE WITH TOKEN CANISTER ID>");
-```
+2. Add authentication logic and added custom features. 

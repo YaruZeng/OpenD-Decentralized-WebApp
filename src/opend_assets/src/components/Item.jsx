@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory } from "../../../declarations/nft";
-import { idlFactory as tokenIdlFactory} from "../../../declarations/token";
+import { idlFactory as tokenIdlFactory } from "../../../declarations/token";
 import { Principal } from "@dfinity/principal";
 import Button from "./Button";
 import { opend } from "../../../declarations/opend";
@@ -14,7 +14,7 @@ function Item(props) {
   const [image, setImage] = useState();
   const [button, setButton] = useState(); // control the states of sell button
   const [priceInput, setPriceInput] = useState(); // control the states of price input
-  const [loaderHidden, setLoaderHidden] = useState(true); 
+  const [loaderHidden, setLoaderHidden] = useState(true);
   const [blur, setBlur] = useState(); // control the style of image
   const [listingStatus, setListingStatus] = useState(); // control the notice of listing
   const [priceLabel, setPriceLabel] = useState();
@@ -49,24 +49,27 @@ function Item(props) {
     setImage(imageURL);
 
     // handle input, ownerId, and sell button on MyNFTs and Discover page
-    if (props.role === "collection") { // on MyNFTs page 
-    const nftIsListed = await opend.isListed(props.id);
-    if (nftIsListed) {
-      setPriceInput(); // hide the input
-      setOwnerId("OpenD");
-      setListingStatus("Listed");
-      setBlur({filter: "blur(4px)"});
-    } else {
-      setButton(<Button handleClick={handleSell} text={"Sell"} />);
-    }
-  } else if (props.role === "discover"){ // on Discover page 
+    if (props.role === "collection") {
+      // on MyNFTs page
+      const nftIsListed = await opend.isListed(props.id);
+      if (nftIsListed) {
+        setPriceInput(); // hide the input
+        setOwnerId("OpenD");
+        setListingStatus("Listed");
+        setBlur({ filter: "blur(4px)" });
+      } else {
+        setButton(<Button handleClick={handleSell} text={"Sell"} />);
+      }
+    } else if (props.role === "discover") {
+      // on Discover page
       const originalOwner = await opend.getOriginalOwner(props.id);
-      if (originalOwner.toText() != CURRENT_USER_ID.toText()) { // original owner cannot buy the NFT
+      if (originalOwner.toText() != CURRENT_USER_ID.toText()) {
+        // original owner cannot buy the NFT
         setButton(<Button handleClick={handleBuy} text={"Buy"} />);
       }
 
       const price = await opend.getListedNFTPrice(props.id);
-      setPriceLabel(<PriceLabel sellPrice={price.toString()}/>);
+      setPriceLabel(<PriceLabel sellPrice={price.toString()} />);
     }
   }
 
@@ -91,7 +94,7 @@ function Item(props) {
 
   async function sellItem() {
     // to display NFT ready to sell
-    setBlur({filter: "blur(4px)"});
+    setBlur({ filter: "blur(4px)" });
     setLoaderHidden(false);
     console.log("Sell confirmed: " + price);
     const listingResult = await opend.listItem(props.id, Number(price));
@@ -111,8 +114,11 @@ function Item(props) {
   }
 
   async function handleBuy() {
+    // triggered when user click buy on Discover page
     console.log("Buy is triggered");
-    const tokenActor = await Actor.createActor(tokenIdlFactory, { // create a token actor with its own id
+    setLoaderHidden(false);
+    const tokenActor = await Actor.createActor(tokenIdlFactory, {
+      // create a token actor with its own id
       agent,
       canisterId: Principal.fromText("rrkah-fqaaa-aaaaa-aaaaq-cai"),
     });
@@ -120,9 +126,16 @@ function Item(props) {
     const sellerId = await opend.getOriginalOwner(props.id);
     const itemPrice = await opend.getListedNFTPrice(props.id);
 
-    const result = await tokenActor.transfer(sellerId, itemPrice);
-    
-
+    const result = await tokenActor.transfer(sellerId, itemPrice); // transfer tokens through the token actor
+    if (result == "Success") {
+      const transferResult = await opend.completePurchase(
+        props.id,
+        sellerId,
+        CURRENT_USER_ID
+      );
+      console.log("purchase: " + transferResult);
+      setLoaderHidden(true);
+    }
   }
 
   return (

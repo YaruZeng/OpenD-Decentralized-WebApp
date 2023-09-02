@@ -18,9 +18,12 @@ function Item(props) {
 
   const localHost = "http://localhost:8080/"; // to make HTTP request to fetch the nft canister
   const agent = new HttpAgent({host: localHost}); // create a HTTP argent
+  // TODO: when deploy live, remove the following line
+  agent.fetchRootKey(); // to get rid of Error: Invalid principal argument
+  let NFTActor;
 
   async function loadNFT() { // create a nft actor and fetch data from backend
-    const NFTActor = await Actor.createActor(idlFactory, {
+    NFTActor = await Actor.createActor(idlFactory, {
       agent,
       canisterId: id
     });
@@ -64,6 +67,11 @@ function Item(props) {
     console.log("Sell confirmed: " + price);
     const listingResult = await opend.listItem(props.id, Number(price));
     console.log("listing: " + listingResult);
+    if (listingResult == "Success") {
+      const openDId = await opend.getOpenDCanisterID(); // get the system Principal Id as the new owner
+      const transferResult = await NFTActor.transferOwnership(openDId);
+      console.log("transfer: " + transferResult);
+    }
   }
 
   return (

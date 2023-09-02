@@ -18,6 +18,7 @@ function Item(props) {
   const [blur, setBlur] = useState(); // control the style of image
   const [listingStatus, setListingStatus] = useState(); // control the notice of listing
   const [priceLabel, setPriceLabel] = useState();
+  const [shouldDisplay, setDisplay] = useState(true); // control the display of NFT item
 
   const id = props.id;
 
@@ -90,6 +91,7 @@ function Item(props) {
       />
     );
     setButton(<Button handleClick={sellItem} text={"Confirm"} />); // change button text
+
   }
 
   async function sellItem() {
@@ -135,11 +137,12 @@ function Item(props) {
       );
       console.log("purchase: " + transferResult);
       setLoaderHidden(true);
+      setDisplay(false); // hide the sold NFT
     }
   }
 
   return (
-    <div className="disGrid-item">
+    <div className="disGrid-item" style={{display: shouldDisplay ? "inline" : "none"}}>
       <div className="disPaper-root disCard-root makeStyles-root-17 disPaper-elevation1 disPaper-rounded">
         <img
           className="disCardMedia-root makeStyles-image-19 disCardMedia-media disCardMedia-img"
